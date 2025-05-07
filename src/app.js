@@ -4,14 +4,29 @@ const app = express();
 
 
 
+app.get("/user", 
+    [(req, res, next) => {
+        console.log("Response handeler 1")
+        next();
+        // res.send("1st Response");
+    },
+    (req, res, next) =>{
+        console.log("Response handeler 2")
+        // res.send("2nd Response");
+        next();
+    },
+    (req, res, next) =>{
+        console.log("Response handeler 3")
+        // res.send("3rd Response");
+        next();
+    },
+    (req, res, next) =>{
+        console.log("Response handeler 4")
+        res.send("4th Response");
+        // next();
+    }]
 
-
-app.use("/user/:userId/:name/:password", (req, res) => {
-    // console.log(req.query);
-    console.log(req.params);
-    res.send("Hello World!");
-});
-
+);
 
 
 
