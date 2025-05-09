@@ -1,22 +1,20 @@
-const express = require("../node_modules/express");
+const express = require("express");
+const mongoDBConnection = require("./config/database");
+const userSignUp = require("./controller/userController");
 
 const app = express();
-    
-const { adminAuth } = require("./middleware/auth");
 
 
-app.use("/admin", adminAuth);
+app.post("/signup", userSignUp);
 
-app.get("/admin/getAllData", (req, res)=>{
-    res.send("All data fetched");
+
+mongoDBConnection().
+then(()=>{
+    console.log("DB connection is succesfull...");
+    app.listen(3000, ()=>{
+        console.log("Server is running....");
+    });
+}).
+catch((err)=>{
+    console.log("Problem to connect database..."+ err);
 })
-app.get("/admin/deleteAdata", (req, res)=>{
-    res.send("Deleted a data"); 
-})
-
-
-
-
-app.listen(3000, ()=>{
-    console.log("Server is running....");
-});
