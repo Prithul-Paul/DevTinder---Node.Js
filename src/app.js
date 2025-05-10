@@ -1,11 +1,15 @@
 const express = require("express");
 const mongoDBConnection = require("./config/database");
-const userSignUp = require("./controller/userController");
+const routes = require("./controller/userController");
 
 const app = express();
 
-
-app.post("/signup", userSignUp);
+app.use(express.json());
+app.post("/signup", routes.userSignUp);
+app.get("/user", routes.findUserByEmail);
+app.get("/feed", routes.userFeed);
+app.patch("/user", routes.userUpdate);
+app.delete("/user", routes.userDelete);
 
 
 mongoDBConnection().
