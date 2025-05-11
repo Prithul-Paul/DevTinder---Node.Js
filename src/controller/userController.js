@@ -1,8 +1,17 @@
 const User = require("../models/users");
+const validator = require("validator");
 const userSignUp = async (req, res)=>{
     // console.log(req.body);
-    const user = new User(req.body);
+    const allowedFields = ["firstName", "lastName", "emailId", "password", "gender"];
     try{
+        const fieldCheck = Object.keys(req.body).every((key) => allowedFields.includes(key));
+        if(!fieldCheck){
+            throw new Error("Trying Insert Enexpected Fields");
+        }
+        if(!validator.isEmail(req.body?.emailId)){
+            throw new Error("Invalid Email");
+        }
+        const user = new User(req.body);
         await user.save();
         res.send("User Added Succesfully");
     }catch(err){
@@ -34,9 +43,19 @@ const userFeed = async (req, res)=>{
 }
 
 const userUpdate = async (req, res)=>{
+    const allowedFields = ["firstName", "lastName", "password", "gender", "age", "photoURL", "about", "skills"];
+
     try{
-        const userId = req.body.userId;
+        const userId = req.params?.userId;
         const data = req.body;
+        const skills = req.body?.skills || [];
+        const fieldCheck = Object.keys(data).every((key) => allowedFields.includes(key));
+        if(!fieldCheck){
+            throw new Error("Trying Insert Enexpected Fields");
+        }
+        if(skills > 20){
+            throw new Error("Max. 20 skills are allowed");
+        }
         const value = await User.findByIdAndUpdate(userId, data, {returnDocument:"after"});
         res.send("Updated Succesfully"+value)
     }catch(err){

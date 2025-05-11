@@ -8,7 +8,7 @@ app.use(express.json());
 app.post("/signup", routes.userSignUp);
 app.get("/user", routes.findUserByEmail);
 app.get("/feed", routes.userFeed);
-app.patch("/user", routes.userUpdate);
+app.patch("/user/:userId", routes.userUpdate);
 app.delete("/user", routes.userDelete);
 
 
