@@ -1,4 +1,5 @@
 const User = require("../models/users");
+
 const userSignUp = async (req, res)=>{
     const user = new User({
         firstName: "Pradip",
