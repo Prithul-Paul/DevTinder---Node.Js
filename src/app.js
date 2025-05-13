@@ -1,16 +1,18 @@
 const express = require("express");
 const mongoDBConnection = require("./config/database");
 const userController = require("./controller/userController");
+const middelwares = require("./middlewares/auth");
+
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.post("/signup", userController.userSignUp);
 app.post("/login", userController.userLogin);
-app.get("/user", userController.findUserByEmail);
-app.get("/feed", userController.userFeed);
-app.patch("/user/:userId", userController.userUpdate);
-app.delete("/user", userController.userDelete);
+app.get("/profile", middelwares.userAuth, userController.userProfile);
 
 
 mongoDBConnection().
