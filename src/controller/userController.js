@@ -2,6 +2,10 @@ const User = require("../models/users");
 const validator = require("validator");
 const validations = require("../helpers/validation");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+
+
 const userSignUp = async (req, res)=>{
     // console.log(req.body);
     // const allowedFields = ["firstName", "lastName", "emailId", "password", "gender"];
@@ -25,7 +29,7 @@ const userSignUp = async (req, res)=>{
         await user.save();
         res.send("User Added Succesfully");
     }catch(err){
-        res.status(500).send("error: "+err);
+        res.status(500).send(err);
     }
 }
 
@@ -43,11 +47,33 @@ const userLogin = async (req, res)=>{
             if(!checkPassword){
                 throw new Error("Invalid Credetials");
             }else{
+                let token = jwt.sign({ userId: validUserCheck._id }, 'Ptithul@28112000');
+                //console.log(token);
+                res.cookie("token", token);
                 res.send("Login Succesful");
             }
         }
     }catch(err){
-        res.send("Error"+ err);
+        res.status(500).send(err);
+    } 
+
+}
+
+const userprofile = async (req, res)=>{
+    // const {emailId, password} = req.body;
+    try{
+        const cookie = req.cookies;
+        const { token } = cookie;
+        if(!token){
+           throw new Error("Un-authorized User");
+        }
+        const decodedInfo = jwt.verify(token, 'Ptithul@28112000');
+        const {userId} = decodedInfo;
+        const resUser = await User.findById(userId); 
+        res.send(resUser);
+        // console.log(decodedInfo);
+    }catch(err){
+        res.status(500).send(err);
     } 
 
 }
@@ -62,7 +88,7 @@ const findUserByEmail = async (req, res)=> {
             res.status(400).send("User not found");
         }
     }catch(err){
-        res.send("Something went wrong"+ err);
+        res.status(500).send(err);
     }
 }
 
@@ -71,7 +97,7 @@ const userFeed = async (req, res)=>{
         const allUsers = await User.find({});
         res.send(allUsers);
     }catch(err){
-        res.send("Something went wrong"+ err);
+        res.status(500).send(err);
     }
 }
 
@@ -92,7 +118,7 @@ const userUpdate = async (req, res)=>{
         const value = await User.findByIdAndUpdate(userId, data, {returnDocument:"after"});
         res.send("Updated Succesfully"+value)
     }catch(err){
-        res.send("Something went wrong"+ err);
+        res.status(500).send(err);
     }  
 }
 
@@ -102,7 +128,7 @@ const userDelete = async (req, res)=>{
         await User.findByIdAndDelete(userId);
         res.send("Deleted Data Succesfully"+value)
     }catch(err){
-        res.send("Something went wrong"+ err);
+        res.status(500).send(err);
     }  
 }
 
@@ -110,6 +136,7 @@ const userDelete = async (req, res)=>{
 module.exports = { 
     userSignUp,
     userLogin,
+    userprofile,
     findUserByEmail, 
     userFeed, 
     userUpdate, 
