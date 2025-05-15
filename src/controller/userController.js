@@ -37,8 +37,11 @@ const userLogin = async (req, res)=>{
             if(!checkPassword){
                 res.status(401).json({error: "Invalid Credential"});
             }else{
-                const token = jwt.sign({ userId: validUserCheck._id }, 'Prithul@28112000');
-                res.cookie("usertoken", token);
+                const token = jwt.sign({ userId: validUserCheck._id }, 'Prithul@28112000', { expiresIn: '1h' });
+                res.cookie("usertoken", token, {
+                    expires: new Date(Date.now() + (60000 * 60)), // 5 seconds from now
+                    httpOnly: true,
+                  });
                 res.send("Login Succesful");
             }
         }
