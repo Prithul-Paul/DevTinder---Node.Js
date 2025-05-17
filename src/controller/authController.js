@@ -39,9 +39,9 @@ const userLogin = async (req, res)=>{
             }else{
                 const token = jwt.sign({ userId: validUserCheck._id }, 'Prithul@28112000', { expiresIn: '1h' });
                 res.cookie("usertoken", token, {
-                    expires: new Date(Date.now() + (60000 * 60)), // 5 seconds from now
+                    expires: new Date(Date.now() + (60000 * 60)), // 1 hour from now
                     httpOnly: true,
-                  });
+                });
                 res.send("Login Succesful");
             }
         }
@@ -51,18 +51,22 @@ const userLogin = async (req, res)=>{
 
 }
 
-const userProfile = async (req, res)=>{
+const userLogout = async (req, res)=>{
+    // const {emailId, password} = req.body;
     try{
-        res.send(req.user);
+        res.cookie("usertoken", null, {
+            expires: new Date(Date.now())
+        }).send("Your are logged out!!!");
     }catch(err){
-        res.status(500).send(err.message);
+        res.send(err.message);
     } 
 
 }
 
 
+
 module.exports = { 
     userSignUp,
     userLogin,
-    userProfile
+    userLogout
 };
