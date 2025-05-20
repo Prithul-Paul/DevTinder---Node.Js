@@ -2,6 +2,8 @@ const User = require("../models/users");
 const validations = require("../helpers/validation");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const userSignUp = async (req, res)=>{
     try{
         validations.signupValidation(req);
@@ -34,6 +36,8 @@ const userLogin = async (req, res)=>{
             if(!checkPassword){
                 res.status(401).json({error: "Invalid Credential"});
             }else{
+                const accessToken = jwt.sign({"userId":validUserCheck._id}, "Prithul@28112000");
+                res.cookie("token", accessToken);
                 res.send("Login Succesful");
             }
         }
@@ -51,52 +55,14 @@ const userProfile = async (req, res)=>{
     }
 }
 
-const userFeed = async (req, res)=>{
-    try{
-        const allUsers = await User.find({});
-        res.send(allUsers);
-    }catch(err){
-        res.send("Something went wrong"+ err);
-    }
-}
 
-const userUpdate = async (req, res)=>{
-    const allowedFields = ["firstName", "lastName", "password", "gender", "age", "photoURL", "about", "skills"];
 
-    try{
-        const userId = req.params?.userId;
-        const data = req.body;
-        const skills = req.body?.skills || [];
-        const fieldCheck = Object.keys(data).every((key) => allowedFields.includes(key));
-        if(!fieldCheck){
-            throw new Error("Trying Insert Enexpected Fields");
-        }
-        if(skills > 20){
-            throw new Error("Max. 20 skills are allowed");
-        }
-        const value = await User.findByIdAndUpdate(userId, data, {returnDocument:"after"});
-        res.send("Updated Succesfully"+value)
-    }catch(err){
-        res.send("Something went wrong"+ err);
-    }  
-}
 
-const userDelete = async (req, res)=>{
-    try{
-        const userId = req.body.userId;
-        await User.findByIdAndDelete(userId);
-        res.send("Deleted Data Succesfully"+value)
-    }catch(err){
-        res.send("Something went wrong"+ err);
-    }  
-}
+
 
 
 module.exports = { 
     userSignUp,
     userLogin,
-    findUserByEmail, 
-    userFeed, 
-    userUpdate, 
-    userDelete 
+    userProfile
 };
