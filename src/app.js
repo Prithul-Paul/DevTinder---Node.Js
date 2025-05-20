@@ -1,8 +1,10 @@
 const express = require("express");
 const cookiePerser = require("cookie-parser");
 const mongoDBConnection = require("./config/database");
-const userController = require("./controller/userController");
-const middelwares = require("./middlewares/auth");
+
+const authRouters = require("./routes/auth");
+const profileRouters = require("./routes/profile");
+const requestRouters = require("./routes/request");
 
 const cookieParser = require("cookie-parser");
 
@@ -11,9 +13,9 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.post("/signup", userController.userSignUp);
-app.post("/login", userController.userLogin);
-app.get("/profile", middelwares.userAuth, userController.userProfile);
+app.use("/", authRouters);
+app.use("/", profileRouters);
+app.use("/", requestRouters);
 
 
 
