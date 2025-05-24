@@ -5,6 +5,7 @@ const mongoDBConnection = require("./config/database");
 const authRouters = require("./routes/auth");
 const profileRouters = require("./routes/profile");
 const requestRouters = require("./routes/request");
+const userRouters = require("./routes/user");
 
 const cookieParser = require("cookie-parser");
 
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use("/", authRouters);
 app.use("/", profileRouters);
 app.use("/", requestRouters);
+app.use("/", userRouters);
 
 
 

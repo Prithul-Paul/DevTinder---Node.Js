@@ -17,7 +17,7 @@
 - POST /request/review/rejected/:requestId
 
 ### profileRouter
-- GET /profile/connections
-- GET /profile/requests
-- GET /profile/feed
+- GET /user/connections
+- GET /user/requests
+- GET /user/feed
 
