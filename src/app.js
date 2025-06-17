@@ -8,9 +8,13 @@ const requestRouters = require("./routes/request");
 const userRouters = require("./routes/user");
 
 const cookieParser = require("cookie-parser");
-
+var cors = require('cors');
 const app = express();
 
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow only a specific origin
+    credentials: true, 
+}));
 app.use(express.json());
 app.use(cookieParser());
 

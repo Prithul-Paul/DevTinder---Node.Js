@@ -41,7 +41,7 @@ const userLogin = async (req, res)=>{
                     expires: new Date(Date.now() + (60000 * 60)), // 1 hour from now
                     httpOnly: true,
                 });
-                res.send("Login Succesful");
+                res.send(validUserCheck);
             }
         }
     }catch(err){
