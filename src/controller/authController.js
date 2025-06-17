@@ -26,15 +26,15 @@ const userLogin = async (req, res)=>{
     const {emailId, password} = req.body;
     try{
         if(!validator.isEmail(emailId)){
-            res.status(401).json({error: "Email formate is not correct"});
+            return res.status(401).json({error: "Email formate is not correct"});
         }
         const validUserCheck = await User.findOne({emailId:emailId});
         if(!validUserCheck){
-            res.status(401).json({error: "Invalid Credential"});
+            return res.status(401).json({error: "Invalid Credential"});
         }else{
             let checkPassword = await bcrypt.compare(password, validUserCheck.password);
             if(!checkPassword){
-                res.status(401).json({error: "Invalid Credential"});
+                return res.status(401).json({error: "Invalid Credential"});
             }else{
                 const token = jwt.sign({ userId: validUserCheck._id }, 'Prithul@28112000', { expiresIn: '1h' });
                 res.cookie("usertoken", token, {
