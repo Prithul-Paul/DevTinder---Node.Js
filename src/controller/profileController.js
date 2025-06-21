@@ -18,10 +18,11 @@ const userProfileEdit = async (req, res)=>{
                 validateUser[field] = req.body[field];
             } );
             // console.log(validateUser);
-            await validateUser.save();
+            const updatedUser= await validateUser.save();
             res.json({
                 "status": "success",
-                "message": "Profile is updated succesfully"
+                "message": "Profile is updated succesfully",
+                "data": updatedUser
             });
 
         }else{
