@@ -34,8 +34,8 @@ const connectedUsers = async (req, res) => {
             ],
             status : "accepted"
         })
-        .populate( "formUserId", "firstName lastName")
-        .populate( "toUserId", "firstName lastName");
+        .populate( "formUserId", "firstName lastName photoURL about")
+        .populate( "toUserId", "firstName lastName photoURL about");
 
         const data = connections.map((row) => {
             if(row.formUserId._id.toString() === loggedInUserId.toString()){
