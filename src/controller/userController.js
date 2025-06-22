@@ -72,10 +72,15 @@ const userFeed = async (req, res) => {
 
         const hideUserIds = new Set();
 
-        hideUsersOnFeed.forEach((row)=>{
-            hideUserIds.add(row.formUserId.toString());
-            hideUserIds.add(row.toUserId.toString());
-        });
+        // console.log(hideUsersOnFeed);
+        if (hideUsersOnFeed.length !== 0) {
+            hideUsersOnFeed.forEach((row)=>{
+                hideUserIds.add(row.formUserId.toString());
+                hideUserIds.add(row.toUserId.toString());
+            });
+        }else{
+            hideUserIds.add(loggedInUserId.toString());
+        }
         console.log(hideUserIds);
         const excludedIds = Array.from(hideUserIds)
         const excludedObjectIds = excludedIds.map(id => new mongoose.Types.ObjectId(id));

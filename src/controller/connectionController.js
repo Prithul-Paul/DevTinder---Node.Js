@@ -48,7 +48,7 @@ const sendConnectionRequest = async (req, res) => {
         if(status === "interested"){
             successMsg = "Connection Request Sent!!!";
         }else if(status === "ignored"){
-            successMsg = "Connection Request Ignored!!!";
+            successMsg = "You have Ignored the connection!!!";
         }
         res.json({"status": "success", "message": `${successMsg}`});
 
