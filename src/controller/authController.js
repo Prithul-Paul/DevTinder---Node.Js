@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const userSignUp = async (req, res)=>{
     try{
-        validations.signupValidation(req);
+        validations.signupValidation(req, res);
         const {firstName, lastName, emailId, password} = req.body;
         const passwordHash = await bcrypt.hash(req.body?.password, 10);
         const user = new User({
@@ -15,8 +15,20 @@ const userSignUp = async (req, res)=>{
             emailId,
             password: passwordHash
         });
-        await user.save();
-        res.send("User Added Succesfully");
+        const savedUser = await user.save();
+
+
+        const token = jwt.sign({ userId: savedUser._id }, 'Prithul@28112000', { expiresIn: '1h' });
+        res.cookie("usertoken", token, {
+            expires: new Date(Date.now() + (60000 * 60)), // 1 hour from now
+            httpOnly: true,
+        });
+
+        res.json({
+            "status": "success",
+            "message": "User signedup successfully!!!",
+            "data": savedUser
+        });
     }catch(err){
         res.status(500).send("error: "+err);
     }

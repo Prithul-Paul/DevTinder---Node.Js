@@ -1,17 +1,17 @@
 const validator = require("validator");
-const signupValidation = (req)=>{
+const signupValidation = (req, res)=>{
     let { firstName, lastName, emailId, password } = req.body;
     if(!firstName || !lastName){
-        throw new Error("Enter a valid name");
+        return res.status(401).json({error: "First Name or Last name can not be empty"});
     }else if(!validator.isEmail(emailId)){
-        throw new Error("Enter a valid email id");
+        return res.status(401).json({error: "Email formate is not correct"});
     }else if(!validator.isStrongPassword(password)){
-        throw new Error("Enter a strong password");
+        return res.status(401).json({error: "Enter a strong password"});
     }
 }
 
 const editProfileValidation = (req)=>{
-    const editableFields = ["firstName", "lastName", "gender", "age", "photoURL", "about", "skills"];
+    const editableFields = ["firstName", "lastName", "gender", "profileImage", "about", "skills[]"];
     const isEditableFields = Object.keys(req.body).every(field => editableFields.includes(field));
     return isEditableFields;
 }
@@ -29,10 +29,8 @@ const forgotPasswordValidation = (req)=>{
 
             throw new Error("New password should not be same as current password.");
             
-        }else if(!validator.isStrongPassword(password)){
-           
+        }else if(!validator.isStrongPassword(password)){ 
             throw new Error("Strong password needed.");
-
         }
         return true;
     }else{

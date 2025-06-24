@@ -7,12 +7,17 @@ const authRouters = require("./routes/auth");
 const profileRouters = require("./routes/profile");
 const requestRouters = require("./routes/request");
 const userRouters = require("./routes/user");
+const fileUpload = require("express-fileupload");
+const path = require('path');
+
 const app = express();
 
 app.use(cors({
     origin: 'http://localhost:5173', // Allow only a specific origin
     credentials: true,
 }));
+app.use(fileUpload());
+app.use('/profileimages', express.static(path.join(__dirname, '..', '/profileimages')));
 app.use(express.json());
 app.use(cookieParser());
 

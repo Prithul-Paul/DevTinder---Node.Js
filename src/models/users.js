@@ -32,11 +32,11 @@ const userSchema = new mongoose.Schema({
     photoURL:{
         type: String,
         default: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png",
-        validate(value) {
-            if(!validator.isURL(value)){
-                throw new Error("URL not valid");
-            }
-        }
+        // validate(value) {
+        //     if(!validator.isURL(value)){
+        //         throw new Error("URL not valid");
+        //     }
+        // }
     },
     about:{
         type: String,
