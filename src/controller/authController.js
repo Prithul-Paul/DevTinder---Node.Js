@@ -7,11 +7,14 @@ const jwt = require("jsonwebtoken");
 const userSignUp = async (req, res)=>{
     try{
         validations.signupValidation(req, res);
-        const {firstName, lastName, emailId, password} = req.body;
+        const {firstName, lastName, emailId, dob, password} = req.body;
+        // console.log(dob);
+        // return;
         const passwordHash = await bcrypt.hash(req.body?.password, 10);
         const user = new User({
             firstName,
             lastName,
+            dob,
             emailId,
             password: passwordHash
         });

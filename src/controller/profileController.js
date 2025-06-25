@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const path = require('path');
 
 const { editProfileValidation,forgotPasswordValidation } = require("../helpers/validation");
+const users = require("../models/users");
 
 const userProfile = async (req, res)=>{
     try{
@@ -77,19 +78,28 @@ const userProfileEdit = async (req, res)=>{
 const frogotPassword = async (req, res)=>{
     try{
         if(forgotPasswordValidation(req)){
-            let validateUser = req.user;
-            if(await bcrypt.compare(req.body.currentPassword, validateUser.password)){
+            // let validateUser = req.user;
+
+            const { emailId } = req.body;
+
+            const validEmailCheck = await users.findOne({emailId});
+
+            console.log(validEmailCheck);
+
+            if(validEmailCheck){
+                
                 const newEncryptedPassword = await bcrypt.hash(req.body.password, 10);
-                validateUser.password = newEncryptedPassword;
-                await validateUser.save();
+                validEmailCheck.password = newEncryptedPassword;
+                await validEmailCheck.save();
                 res.json({
                     "status": "success",
                     "message": "Password updated succesfully."
                 });
+               
             }else{
-                res.status(500).json({
+                res.json({
                     "status": "error",
-                    "message": "Please put current password correctly."
+                    "message": "This email id is not registered."
                 });
             }
         }

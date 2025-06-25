@@ -25,13 +25,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["male", "female", "other"]
     },
-    age:{
-        type: Number,
-        min: 18
+    dob:{
+        type: String,
     },
     photoURL:{
         type: String,
-        default: "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png",
+        default: "profileimages/no-profileimage.png",
         // validate(value) {
         //     if(!validator.isURL(value)){
         //         throw new Error("URL not valid");
@@ -48,8 +47,21 @@ const userSchema = new mongoose.Schema({
 },
 {
     timestamps: true
-}
+});
+userSchema.virtual('age').get(function () {
+    const formattedDob = new Date(this.dob);
+    const today = new Date();
 
-);
+    let age = today.getFullYear() - formattedDob.getFullYear();
+    const monthDiff = today.getMonth() - formattedDob.getMonth();
+    const dayDiff = today.getDate() - formattedDob.getDate();
+
+    // If birthday hasn't occurred yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        age--;
+    }
+    return age;
+});
+userSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model("User", userSchema);
