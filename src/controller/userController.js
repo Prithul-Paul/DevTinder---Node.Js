@@ -58,6 +58,8 @@ const userFeed = async (req, res) => {
     try{
         const loggedInUserId = req.user._id;
         const loggedInUserAge = req.user.age;
+        console.log(loggedInUserAge);
+        
         const loggedInUserSkills = req.user.skills;
 
         const maxAgeRange = loggedInUserAge + 5;
@@ -103,6 +105,17 @@ const userFeed = async (req, res) => {
                 {
                     $match: {
                     _id: { $nin: excludedObjectIds }
+                    }
+                },
+                {
+                    $addFields: {
+                        age: {
+                            $dateDiff: {
+                                startDate: { $toDate: "$dob" },   // <-- your date-of-birth field
+                                endDate:   '$$NOW',
+                                unit:      'year'
+                            }
+                        }
                     }
                 },
                 {

@@ -48,20 +48,20 @@ const userSchema = new mongoose.Schema({
 {
     timestamps: true
 });
-userSchema.virtual('age').get(function () {
-    const formattedDob = new Date(this.dob);
-    const today = new Date();
+// userSchema.virtual('age').get(function () {
+//     const formattedDob = new Date(this.dob);
+//     const today = new Date();
 
-    let age = today.getFullYear() - formattedDob.getFullYear();
-    const monthDiff = today.getMonth() - formattedDob.getMonth();
-    const dayDiff = today.getDate() - formattedDob.getDate();
+//     let age = today.getFullYear() - formattedDob.getFullYear();
+//     const monthDiff = today.getMonth() - formattedDob.getMonth();
+//     const dayDiff = today.getDate() - formattedDob.getDate();
 
-    // If birthday hasn't occurred yet this year
-    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-        age--;
-    }
-    return age;
-});
-userSchema.set('toJSON', { virtuals: true });
+//     // If birthday hasn't occurred yet this year
+//     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+//         age--;
+//     }
+//     return age;
+// });
+// userSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model("User", userSchema);

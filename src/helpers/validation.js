@@ -34,15 +34,22 @@ const editProfileValidation = (req)=>{
     return isEditableFields;
 }
 
-const forgotPasswordValidation = (req)=>{
+const forgotPasswordValidation = (req, res)=>{
+    // console.log(res);
+    // return res.json({status: "error", message: "Strong password needed."});
     const editableFields = ["emailId", "password"];
     const isEditableFields = Object.keys(req.body).every(field => editableFields.includes(field));
-    let { password } = req.body;
+    let { emailId, password } = req.body;
+
     if(isEditableFields){
-        if(!password){
-            throw new Error("Both fields should not be empty");
-        }else if(!validator.isStrongPassword(password)){ 
-            throw new Error("Strong password needed.");
+        if(!password || !emailId){
+            return res.status(500).json({status: "error", message: "Both fields should not be empty"});
+            // console.log(res); 
+            
+            // throw new Error("Both fields should not be empty");
+        }else if(!validator.isStrongPassword(password)){
+            return res.status(500).json({status: "error", message: "Strong password needed."});
+            // throw new Error("Strong password needed.");
         }
         return true;
     }else{

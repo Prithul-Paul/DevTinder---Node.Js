@@ -77,41 +77,44 @@ const userProfileEdit = async (req, res)=>{
 
 const frogotPassword = async (req, res)=>{
     try{
-        if(forgotPasswordValidation(req)){
+        // console.log("jhbjhb");
+        // forgotPasswordValidation(req, res);
+        if(forgotPasswordValidation(req, res)){
             // let validateUser = req.user;
 
             const { emailId } = req.body;
 
             const validEmailCheck = await users.findOne({emailId});
 
-            console.log(validEmailCheck);
+            // console.log(validEmailCheck);
 
             if(validEmailCheck){
-                
                 const newEncryptedPassword = await bcrypt.hash(req.body.password, 10);
                 validEmailCheck.password = newEncryptedPassword;
                 await validEmailCheck.save();
                 res.json({
-                    "status": "success",
-                    "message": "Password updated succesfully."
+                    status: "success",
+                    message: "Password updated succesfully."
                 });
                
             }else{
-                res.json({
-                    "status": "error",
-                    "message": "This email id is not registered."
+                // console.log(res);
+                return res.status(500).json({
+                    status: "error",
+                    message: "This email id is not registered."
                 });
             }
         }
         else{
-            res.status(500).json(
+            return res.status(500).json(
                 {
-                    "status": "error",
-                    "message": "Invalid field in update"
+                    status: "error",
+                    message: "Invalid field in update"
                 }
             );
-        };
+        }
     }catch(err){
+        console.log('error');
         res.status(500).send(err.message);
     } 
 
