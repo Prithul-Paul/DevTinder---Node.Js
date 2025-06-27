@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
 const mongoDBConnection = async ()=>{
-    await mongoose.connect("mongodb://localhost:27017/devtinder");
+    await mongoose.connect(process.env.DATABASE_CONNECTION_STR);
 }
 module.exports = mongoDBConnection;

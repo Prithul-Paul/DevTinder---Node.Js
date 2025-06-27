@@ -21,7 +21,7 @@ const userSignUp = async (req, res)=>{
         const savedUser = await user.save();
 
 
-        const token = jwt.sign({ userId: savedUser._id }, 'Prithul@28112000', { expiresIn: '1h' });
+        const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
         res.cookie("usertoken", token, {
             expires: new Date(Date.now() + (60000 * 60)), // 1 hour from now
             httpOnly: true,
@@ -51,7 +51,7 @@ const userLogin = async (req, res)=>{
             if(!checkPassword){
                 return res.status(401).json({error: "Invalid Credential"});
             }else{
-                const token = jwt.sign({ userId: validUserCheck._id }, 'Prithul@28112000', { expiresIn: '1h' });
+                const token = jwt.sign({ userId: validUserCheck._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
                 res.cookie("usertoken", token, {
                     expires: new Date(Date.now() + (60000 * 60)), // 1 hour from now
                     httpOnly: true,
