@@ -7,7 +7,7 @@ const userAuth = async (req, res, next) => {
     // console.log("lml");
         return res.status(401).json({ error: "User Unauthorized" });
     }
-    const decriptedUserInfo = jwt.verify(usertoken, 'Prithul@28112000');
+    const decriptedUserInfo = jwt.verify(usertoken, process.env.JWT_SECRET_KEY);
     // console.log(decriptedUserInfo);
     const {userId} = decriptedUserInfo;
 
