@@ -1,5 +1,6 @@
 const socket = require("socket.io");
 const crypto = require("crypto");
+const { Chat } = require("../models/chat");
 
 const initializeSocetSetup = (server) => {
     const io = socket(server, {
@@ -25,10 +26,31 @@ const initializeSocetSetup = (server) => {
             socket.join(getUniqueRoomId(currentUserId, targetUserId));
             
         });
-        socket.on("sendMessage", ({currentUserName, currentUserId, targetUserId, newMessage})=> {
+        socket.on("sendMessage", async ({currentUserName, currentUserId, targetUserId, newMessage})=> {
             // console.log(currentUserName + " Sent : " + newMessage);
-            
-            io.to(getUniqueRoomId(currentUserId, targetUserId)).emit("messageRecieved", {currentUserId, currentUserName, newMessage});
+            try{
+                let chat = await Chat.findOne({
+                    participents: {$all: [currentUserId, targetUserId]}
+                });
+
+                if(!chat){
+                    chat = new Chat({
+                        participents: [currentUserId, targetUserId],
+                        message: []
+                    })
+                }
+                chat.message.push({
+                    senderId: currentUserId,
+                    textMessage: newMessage
+                });
+
+                await chat.save();
+                
+                io.to(getUniqueRoomId(currentUserId, targetUserId)).emit("messageRecieved", {currentUserId, currentUserName, newMessage});
+                
+            }catch(err){
+                console.log(err.message);
+            }
         });
         socket.on("disconnect", ()=> {});
     });

@@ -14,6 +14,7 @@ const userRouters = require("./routes/user");
 const fileUpload = require("express-fileupload");
 const path = require('path');
 const initializeSocetSetup = require('./utils/socket');
+const { chatRouter } = require('./routes/chat');
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -31,6 +32,7 @@ app.use("/", authRouters);
 app.use("/", profileRouters);
 app.use("/", requestRouters);
 app.use("/", userRouters);
+app.use("/", chatRouter);
 
 
 //Socket intialization call
