@@ -138,8 +138,8 @@ const userFeed = async (req, res) => {
                 {
                     $sort: {
                     isCloseInAge: -1,         // First priority: age range match
-                    commonSkillsCount: -1,  // Second: more common skills
-                    age: 1               // Optional: sort younger users first
+                    commonSkillsCount: -1 // Second: more common skills
+                    // age: 1               // Optional: sort younger users first
                     }
                 },
                 {
