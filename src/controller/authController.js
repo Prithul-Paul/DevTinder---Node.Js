@@ -3,6 +3,8 @@ const validations = require("../helpers/validation");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const {transporter} = require("../utils/nodeMailer");
+const {sendOtpTemplateFnction} = require("../utils/mailTemplates");
 
 const userSignUp = async (req, res)=>{
     try{
@@ -37,32 +39,92 @@ const userSignUp = async (req, res)=>{
     }
 }
 
-const userLogin = async (req, res)=>{
-    const {emailId, password} = req.body;
+const userEmailOtp = async (req, res)=>{
+    const { emailId } = req.body;
+    const now = new Date();
+
+    const timestampNow = now.toISOString();
     try{
         if(!validator.isEmail(emailId)){
             return res.status(401).json({error: "Email formate is not correct"});
         }
         const validUserCheck = await User.findOne({emailId:emailId});
         if(!validUserCheck){
-            return res.status(401).json({error: "Invalid Credential"});
+            return res.status(401).json({sucess: false, error: "Invalid Credential"});
         }else{
-            let checkPassword = await bcrypt.compare(password, validUserCheck.password);
-            if(!checkPassword){
-                return res.status(401).json({error: "Invalid Credential"});
-            }else{
-                const token = jwt.sign({ userId: validUserCheck._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-                res.cookie("usertoken", token, {
-                    expires: new Date(Date.now() + (60000 * 60)), // 1 hour from now
-                    httpOnly: true,
-                });
-                res.send(validUserCheck);
+            // console.log(validUserCheck.otpExpiresIn > timestampNow);
+            // return false;
+            if(validUserCheck.otpExpiresIn && validUserCheck.otpExpiresIn.toISOString() > timestampNow ){
+                return res.status(401).json({sucess: false, error: "You have already an active OTP"});
             }
+
+
+            const otp = Math.floor(10000 + Math.random() * 90000);
+            const otpHash = await bcrypt.hash(otp.toString(), 10);
+
+            const now = new Date();
+            const otpExpireTime = new Date(now.getTime() + 2 * 60 * 1000);
+            const otpExpireTimestamp = otpExpireTime.toISOString();
+
+            validUserCheck.otp = otpHash;
+            validUserCheck.otpExpiresIn = otpExpireTimestamp;
+
+            await validUserCheck.save();
+
+            // console.log(otpHash);
+            (async () => {
+                const info = await transporter.sendMail({
+                    from: '"TalkNest" <no-reply@talknest.com>',
+                    to: emailId,
+                    subject: "OTP Verification: TalkNest",
+                    html: sendOtpTemplateFnction(otp), // HTML body
+                });
+                // console.log("Message sent:", info.messageId);
+            })();
+            return res.json({sucess: true, msg: "Mail sent successfully!!"});
         }
     }catch(err){
-        res.send("Error"+ err);
+        res.status(401).send(err.message);
     } 
 
+}
+
+const userLogin = async (req, res) => {
+    const { emailId, otp } = req.body;
+    const now = new Date();
+    const timestampNow = now.toISOString();
+    try{
+        if(!validator.isEmail(emailId)){
+            return res.status(401).json({error: "Email formate is not correct"});
+        }
+        const validUserCheck = await User.findOne({emailId:emailId});
+        if(!validUserCheck){
+            return res.status(401).json({sucess: false, error: "Invalid Credential"});
+        }else{
+            if(!validUserCheck.otp){
+                return res.status(401).json({sucess: false, error: "Invalid OTP"});
+            }
+            let checkOtp = await bcrypt.compare(otp, validUserCheck.otp);
+
+            
+            if(!checkOtp){
+                return res.status(401).json({success: false, error: "Invalid OTP"});
+            }
+
+            if(timestampNow > validUserCheck.otpExpiresIn.toISOString()){
+                return res.status(401).json({success: false, error: "Invalid OTP"});
+            }
+
+            const token = jwt.sign({ userId: validUserCheck._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+            res.cookie("usertoken", token, {
+                expires: new Date(Date.now() + (60000 * 60)), // 1 hour from now
+                httpOnly: true,
+            });
+            res.send(validUserCheck);
+        }
+    }catch(err){
+        res.status(401).send(err.message);
+    }
 }
 
 const userLogout = async (req, res)=>{
@@ -79,6 +141,7 @@ const userLogout = async (req, res)=>{
 
 module.exports = {
     userSignUp,
+    userEmailOtp,
     userLogin,
     userLogout
 };

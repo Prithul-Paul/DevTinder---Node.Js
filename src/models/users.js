@@ -18,6 +18,13 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+    otp: {
+        type: String
+    },
+    otpExpiresIn: {
+        type : Date,
+        default: Date.now
+    },
     password: {
         type: String
     },
