@@ -50,12 +50,12 @@ const userEmailOtp = async (req, res)=>{
         }
         const validUserCheck = await User.findOne({emailId:emailId});
         if(!validUserCheck){
-            return res.status(401).json({sucess: false, error: "Invalid Credential"});
+            return res.json({sucess: false, error: "Invalid Credential"});
         }else{
             // console.log(validUserCheck.otpExpiresIn > timestampNow);
             // return false;
             if(validUserCheck.otpExpiresIn && validUserCheck.otpExpiresIn.toISOString() > timestampNow ){
-                return res.status(401).json({sucess: false, error: "You have already an active OTP"});
+                return res.json({sucess: true, msg: "You have already an active OTP"});
             }
 
 
