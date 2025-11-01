@@ -11,6 +11,9 @@ const authRouters = require("./routes/auth");
 const profileRouters = require("./routes/profile");
 const requestRouters = require("./routes/request");
 const userRouters = require("./routes/user");
+const authProviderRouter = require("./routes/authProviderRouter");
+
+
 const fileUpload = require("express-fileupload");
 const path = require('path');
 const initializeSocetSetup = require('./utils/socket');
@@ -33,6 +36,16 @@ app.use("/", profileRouters);
 app.use("/", requestRouters);
 app.use("/", userRouters);
 app.use("/", chatRouter);
+
+//Login with Google
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; connect-src 'self' http://localhost:5000 https://accounts.google.com;");
+  next();
+});
+
+app.use("/auth", authProviderRouter);
+
+
 
 
 //Socket intialization call

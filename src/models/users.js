@@ -18,6 +18,13 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+    logInProvider: {
+        type: String,
+        enum: ["google", "otp", "password"]
+    },
+    providerAccountID: {
+        type: String
+    },
     otp: {
         type: String
     },
