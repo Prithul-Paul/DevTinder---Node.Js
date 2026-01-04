@@ -20,8 +20,11 @@ const chatSchema = new mongoose.Schema({
             required: true
         }
     ],
-    message: [messageSchema]
-
+    message: [messageSchema],
+    lastModifiedAt: {
+      type: Date,
+      default: Date.now
+    }
 });
 
 const Chat = mongoose.model("Chat",chatSchema);

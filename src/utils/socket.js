@@ -43,6 +43,7 @@ const initializeSocetSetup = (server) => {
                     senderId: currentUserId,
                     textMessage: newMessage
                 });
+                // chat.lastModifiedAt = new Date();
 
                 await chat.save();
                 
