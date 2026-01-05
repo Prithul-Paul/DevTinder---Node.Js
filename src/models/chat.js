@@ -21,11 +21,7 @@ const chatSchema = new mongoose.Schema({
         }
     ],
     message: [messageSchema],
-    lastModifiedAt: {
-      type: Date,
-      default: Date.now
-    }
-});
+}, { timestamps: true });
 
 const Chat = mongoose.model("Chat",chatSchema);
 

@@ -36,7 +36,8 @@ const initializeSocetSetup = (server) => {
                 if(!chat){
                     chat = new Chat({
                         participents: [currentUserId, targetUserId],
-                        message: []
+                        message: [],
+
                     })
                 }
                 chat.message.push({
@@ -44,7 +45,8 @@ const initializeSocetSetup = (server) => {
                     textMessage: newMessage
                 });
                 // chat.lastModifiedAt = new Date();
-
+                // console.log(new Date());
+                // return;
                 await chat.save();
                 
                 io.to(getUniqueRoomId(currentUserId, targetUserId)).emit("messageRecieved", {currentUserId, currentUserName, newMessage});
