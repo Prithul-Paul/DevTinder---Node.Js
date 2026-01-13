@@ -8,17 +8,27 @@ chatRouter.get("/chat/:targetUserId", middelwares.userAuth,  async (req, res)=>{
     const currentUserId = req.user._id;
     const { targetUserId } = req.params;
 
-    let chat = await Chat.findOne({
-        participents: {$all: [currentUserId, targetUserId]}
-    });
+    const limit = Number(req.query.fetchmsg) || 15;
+    const page = Number(req.query.page) || 1;
+
+    const skip = limit * page;
+
+    // console.log(req.query);
+
+    // return;
+
+    let chat = await Chat.findOne(
+        { participents: {$all: [currentUserId, targetUserId]} },
+        { message: { $slice: [-skip, limit] } }
+    );
     let userDetilas = await User.findById(targetUserId).select("firstName lastName photoURL");
-    if(!chat){
-        chat = new Chat({
-            participents: [currentUserId, targetUserId],
-            message: []
-        })
-        await chat.save();
-    }
+    // if(!chat){
+    //     chat = new Chat({
+    //         participents: [currentUserId, targetUserId],
+    //         message: []
+    //     })
+    //     await chat.save();
+    // }
     res.send({userDetilas, chat});
 });
 
